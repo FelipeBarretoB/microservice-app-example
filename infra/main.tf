@@ -145,6 +145,15 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
 
 }
 
+# Create a new public IP for Sonar-vm
+resource "azurerm_public_ip" "sonar_public_ip" {
+  name                = "sonarPublicIP"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
 resource "azurerm_network_interface" "sonar_nic" {
   name                = "sonarNIC"
   location            = azurerm_resource_group.rg.location
@@ -154,7 +163,7 @@ resource "azurerm_network_interface" "sonar_nic" {
     name                          = "sonar_nic_configuration"
     subnet_id                     = azurerm_subnet.taller_subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.taller_public_ip.id
+    public_ip_address_id          = azurerm_public_ip.sonar_public_ip.id
   }
 }
 
