@@ -135,7 +135,7 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
   size                  = "Standard_DS1_v2"
 
   os_disk {
-    name                 = "myOsDiskSonar"
+    name                 = "myOsDisk"
     caching              = "ReadWrite"
     storage_account_type = "Premium_LRS"
   }
@@ -165,7 +165,7 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm_sonar" {
   size                  = "Standard_DS1_v2"
 
   os_disk {
-    name                 = "myOsDisk"
+    name                 = "myOsDiskSonar"
     caching              = "ReadWrite"
     storage_account_type = "Premium_LRS"
   }
