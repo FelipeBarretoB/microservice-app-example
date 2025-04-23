@@ -153,7 +153,7 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm_sonar" {
   size                  = "Standard_DS1_v2"
 
   os_disk {
-    name                 = "myOsDiskSonar"
+    name                 = "myOsDiskSonar2"
     caching              = "ReadWrite"
     storage_account_type = "Premium_LRS"
   }
