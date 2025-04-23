@@ -71,19 +71,6 @@ resource "azurerm_network_security_group" "taller_nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
-
-  security_rule {
-    name                       = "Sonar"
-    priority                   = 1003
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "9000"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
 }
 
 # Create network interface
@@ -155,6 +142,7 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
   boot_diagnostics {
     storage_account_uri = azurerm_storage_account.my_storage_account.primary_blob_endpoint
   }
+
 }
 
 resource "azurerm_linux_virtual_machine" "my_terraform_vm_sonar" {
