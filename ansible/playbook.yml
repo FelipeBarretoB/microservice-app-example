@@ -107,10 +107,14 @@
   become: true
 
   tasks:
+
+  - name: Update the apt package index
+    apt:
+      update_cache: yes
   - name: Instalar dependencias de Docker
     apt:
       name:
-       - apt-transport-https
+        - apt-transport-https
         - ca-certificates
         - curl
         - software-properties-common
