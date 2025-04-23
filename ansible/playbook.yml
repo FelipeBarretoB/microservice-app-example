@@ -145,7 +145,7 @@
   - name: Create SonarQube volumes
     community.docker.docker_volume:
       name: "{{ item }}"
-      loop:
+    loop:
       - sonarqube_conf
       - sonarqube_data
       - sonarqube_extensions
