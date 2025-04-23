@@ -46,7 +46,7 @@ jobs:
           VM_NAME_SONAR="Sonar-vm"
 
           IP=$(az vm list-ip-addresses --name "$VM_NAME" --resource-group "$RESOURCE_GROUP" --query "[0].virtualMachine.network.publicIpAddresses[0].ipAddress" -o tsv)
-          IP_SONAR=$(az vm list-ip-addresses --name "$VM_NAME_SONAR" --resource-group "$RESOURCE_GROUP" --query "[0].virtualMachine.network.publicIpAddresses[1].ipAddress" -o tsv)
+          IP_SONAR=$(az vm list-ip-addresses --name "$VM_NAME_SONAR" --resource-group "$RESOURCE_GROUP" --query "[0].virtualMachine.network.publicIpAddresses[0].ipAddress" -o tsv)
           echo "App VM IP: $IP"
           echo "ip=$IP" >> $GITHUB_OUTPUT
 
