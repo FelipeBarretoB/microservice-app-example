@@ -74,6 +74,8 @@ With this, the state file will be stored in the storage account and you won't ha
 
 if this does not work, do the same process but running it locally, if it works the workflow should work too, as it will now know the state of the infrastructure.
 
+Also, apart from the vm for the application, we create a vm for sonar, this is a code quality tool that will help you to see the quality of your code, it will run a scan on the code and show you the results in the sonar dashboard, you can access it using the ip of the vm.
+
 ### ansible
 
 Now with all the infrastructure we can create and run the application, we need to install ansible and run the playbook. you need to put the name of the 
@@ -81,6 +83,20 @@ vm and rg if you changed it, the workflow uses them to get the ip of the newly c
 It automatically gets the ip of the vm and runs the playbook.
 
 With this, everything should be up and running, you can check the logs of the workflow to see if everything worked.
+
+**WARNING**: If you change the name of the resource group OR the name of the vm, you need to change it in the workflow file too, as it uses the name of the vm to get the ip address of the vm. Heres the code fragment
+```yaml
+RESOURCE_GROUP="<YOUR_RESOURCE_GROUP>"
+VM_NAME="<YOUR_VM_NAME>"
+VM_NAME_SONAR="<YOUR_VM_NAME_SONAR>"
+IP=$(az vm list-ip-addresses --name "$VM_NAME" --resource-group "$RESOURCE_GROUP" --query "[0].virtualMachine.network.publicIpAddresses[0].ipAddress" -o tsv)
+IP_SONAR=$(az vm list-ip-addresses --name "$VM_NAME_SONAR" --resource-group "$RESOURCE_GROUP" --query "[0].virtualMachine.network.publicIpAddresses[1].ipAddress" -o tsv)
+```
+
+### Sonar
+In the ansible playbook we also install sonar, this is a code quality tool that
+will help you to see the quality of your code, it will run a scan on the code and
+show you the results in the sonar dashboard, you can access it using the ip of the vm.
 
 ### Selenium
 The last part of the workflow is the selenium test, this is a simple test that 
@@ -96,3 +112,4 @@ proceed method and it should work fine.
 
 If for any reason the workflow fails to get an ip address for selenium to test it
 will default to the localhost.
+

@@ -43,9 +43,10 @@ jobs:
         run: |
           RESOURCE_GROUP="taller-rg"
           VM_NAME="App-vm"
+          VM_NAME_SONAR="Sonar-vm"
 
           IP=$(az vm list-ip-addresses --name "$VM_NAME" --resource-group "$RESOURCE_GROUP" --query "[0].virtualMachine.network.publicIpAddresses[0].ipAddress" -o tsv)
-
+          IP_SONAR=$(az vm list-ip-addresses --name "$VM_NAME_SONAR" --resource-group "$RESOURCE_GROUP" --query "[0].virtualMachine.network.publicIpAddresses[1].ipAddress" -o tsv)
           echo "App VM IP: $IP"
           echo "ip=$IP" >> $GITHUB_OUTPUT
 
@@ -54,8 +55,10 @@ jobs:
 
           # Create the hosts.ini file in the ansible folder
           cat <<EOF > hosts.ini
-          [all]
-          $IP ansible_user=${{ secrets.TF_VAR_USERNAME }} ansible_password=${{ secrets.TF_VAR_PASSWORD }}
+          [my-vms]
+          app ansible_host=$IP ansible_user=${{ secrets.TF_VAR_USERNAME }} ansible_password=${{ secrets.TF_VAR_PASSWORD }}
+          sonar ansible_host=$IP_SONAR ansible_user=${{ secrets.TF_VAR_USERNAME }} ansible_password=${{ secrets.TF_VAR_PASSWORD }}
+
 
       - name: Run Ansible Playbook from ansible folder
         working-directory: ./ansible

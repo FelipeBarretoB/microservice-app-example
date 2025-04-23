@@ -1,6 +1,6 @@
 ---
 - name: Install Docker and Run Docker Compose
-  hosts: all
+  hosts: app
   become: true
 
   tasks:
@@ -101,3 +101,83 @@
       command: docker-compose up -d
       args:
         chdir: /home/{{ ansible_user }}
+
+- name: Install Docker and Run sonar
+  hosts: sonar
+  become: true
+
+  tasks:
+  - name: Instalar dependencias de Docker
+    apt:
+      name:
+       - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+      state: present
+      update_cache: yes
+
+  - name: Agregar la clave GPG oficial de Docker
+    ansible.builtin.apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Agregar el repositorio de Docker
+    ansible.builtin.apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+
+  - name: Instalar Docker CE
+    apt:
+      name: docker-ce
+      state: present
+      update_cache: yes
+
+  - name: Create SonarQube network
+    community.docker.docker_network:
+      name: sonarnet
+      driver: bridge
+
+  - name: Create SonarQube volumes
+    community.docker.docker_volume:
+      name: "{{ item }}"
+      loop:
+      - sonarqube_conf
+      - sonarqube_data
+      - sonarqube_extensions
+      - sonarqube_bundled-plugins
+      - postgresql
+      - postgresql_data
+
+  - name: Run PostgreSQL container
+    community.docker.docker_container:
+        name: db
+        image: postgres
+        networks:
+          - name: sonarnet
+        env:
+          POSTGRES_USER: sonar
+          POSTGRES_PASSWORD: sonar
+        volumes:
+          - postgresql:/var/lib/postgresql
+          - postgresql_data:/var/lib/postgresql/data
+        restart_policy: always
+
+  - name: Run SonarQube container
+    community.docker.docker_container:
+        name: sonarqube
+        image: sonarqube
+        ports:
+          - "9000:9000"
+        networks:
+          - name: sonarnet
+        env:
+          SONARQUBE_JDBC_URL: "jdbc:postgresql://db:5432/sonar"
+          SONARQUBE_JDBC_USERNAME: sonar
+          SONARQUBE_JDBC_PASSWORD: sonar
+        volumes:
+          - sonarqube_conf:/opt/sonarqube/conf
+          - sonarqube_data:/opt/sonarqube/data
+          - sonarqube_extensions:/opt/sonarqube/extensions
+          - sonarqube_bundled-plugins:/opt/sonarqube/lib/bundled-plugins
+        restart_policy: always
