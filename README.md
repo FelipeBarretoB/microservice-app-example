@@ -113,3 +113,8 @@ proceed method and it should work fine.
 If for any reason the workflow fails to get an ip address for selenium to test it
 will default to the localhost.
 
+## Diagram
+
+For a visual of the workflow, at [This diagrama](diagrama_auto.pdf) 
+
+
