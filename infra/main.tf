@@ -71,6 +71,19 @@ resource "azurerm_network_security_group" "taller_nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
+  security_rule {
+    name                       = "Sonar"
+    priority                   = 1003
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "9000"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
 }
 
 # Create network interface
@@ -142,4 +155,30 @@ resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
   boot_diagnostics {
     storage_account_uri = azurerm_storage_account.my_storage_account.primary_blob_endpoint
   }
+}
+
+resource "azurerm_linux_virtual_machine" "my_terraform_vm_sonar" {
+  name                  = "Sonar-vm"
+  location              = azurerm_resource_group.rg.location
+  resource_group_name   = azurerm_resource_group.rg.name
+  network_interface_ids = [azurerm_network_interface.taller_nic.id]
+  size                  = "Standard_DS1_v2"
+
+  os_disk {
+    name                 = "myOsDisk"
+    caching              = "ReadWrite"
+    storage_account_type = "Premium_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts-gen2"
+    version   = "latest"
+  }
+
+  computer_name  = "hostname"
+  admin_username = var.username
+  disable_password_authentication = false
+  admin_password = var.password
 }
