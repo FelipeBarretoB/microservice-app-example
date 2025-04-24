@@ -10,6 +10,12 @@ jobs:
     name: 'Ansible Deployment'
     runs-on: ubuntu-latest
     steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+        
       - name: Get app VM IP and create Ansible hosts.ini
         id: get-ip
         run: |
