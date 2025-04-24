@@ -10,6 +10,15 @@ on:
       - 'auth-api/**'
       - 'users-api/**'
       - 'frontend/**'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'log-message-processor/**'
+      - 'todos-api/**'
+      - 'auth-api/**'
+      - 'users-api/**'
+      - 'frontend/**'
 
 jobs:
   build-and-push:
