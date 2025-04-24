@@ -63,6 +63,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
+      register: result
 
     - name: Copy auth-api directory to the target machine
       copy:

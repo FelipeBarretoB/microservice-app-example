@@ -12,6 +12,5 @@ COPY . .
 ENV JWT_SECRET PRFT
 ENV TODO_API_PORT 8082
 
-VOLUME ["/app"]
 
 CMD ["npm", "start"]
