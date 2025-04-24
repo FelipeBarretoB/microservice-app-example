@@ -9,9 +9,7 @@ services:
   log_processor:
     build:
       context: ./log-message-processor  # Path to the subdirectory
-      dockerfile: Dockerfile   
-    volumes:
-    - ./log-message-processor:/app         # (Optional) if your file is named Dockerfile
+      dockerfile: Dockerfile          # (Optional) if your file is named Dockerfile
     container_name: log_processor
     depends_on:
       - redis
@@ -24,8 +22,6 @@ services:
     build:
       context: ./todos-api
       dockerfile: Dockerfile
-    volumes:
-    - ./todos-api:/app
     container_name: todos-api
     depends_on:
       - redis
@@ -43,8 +39,6 @@ services:
    build:
      context: ./auth-api
      dockerfile: Dockerfile
-   volumes:
-    - ./auth-api:/app
    container_name: auth-api
    environment:
      JWT_SECRET: PRFT
@@ -57,8 +51,6 @@ services:
    build:
      context: ./users-api
      dockerfile: Dockerfile
-   volumes:
-    - ./users-api:/app
    container_name: user-api
    environment:
      JWT_SECRET: PRFT
@@ -70,8 +62,6 @@ services:
    build:
      context: ./frontend
      dockerfile: Dockerfile
-   volumes:
-    - ./frontend:/app
    container_name: frontend
    depends_on:
      - auth_api
