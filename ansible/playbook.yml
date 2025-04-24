@@ -78,13 +78,13 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
-      register: result
+      register: auth
     
     - name: rebuild todos-api
       command: docker build -t todos-api ./todos-api
       args:
         chdir: /home/{{ ansible_user }}
-      when: result.changed
+      when: auth.changed
 
     - name: Copy users-api directory to the target machine
       copy:
@@ -93,13 +93,13 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
-      register: result
+      register: users
 
     - name: rebuild todos-api
       command: docker build -t todos-api ./todos-api
       args:
         chdir: /home/{{ ansible_user }}
-      when: result.changed
+      when: users.changed
 
     - name: Copy frontend directory to the target machine
       copy:
@@ -108,13 +108,13 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
-      register: result
+      register: frontend
 
     - name: rebuild frontend
       command: docker build -t frontend ./frontend
       args:
         chdir: /home/{{ ansible_user }}
-      when: result.changed
+      when: frontend.changed
 
     - name: Copy log-message-processor directory to the target machine
       copy:
@@ -123,19 +123,20 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
-      register: result
+      register: log
     
     - name: rebuild log-message-processor
       command: docker build -t log-message-processor ./log-message-processor
       args:
         chdir: /home/{{ ansible_user }}
-      when: result.changed
+      when: log.changed
 
 
     - name: Run Docker Compose
-      command: docker-compose up -d
+      command: docker-compose up -d --build
       args:
         chdir: /home/{{ ansible_user }}
+      when : auth.changed or users.changed or frontend.changed or log.changed
 
 - name: Install Docker and Run sonar
   hosts: sonar
