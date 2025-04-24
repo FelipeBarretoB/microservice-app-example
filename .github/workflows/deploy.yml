@@ -6,38 +6,10 @@ on:
       - master
 
 jobs:
-  terraform:
-    name: 'deploying infrastructure and test'
+  ansible-deployment:
+    name: 'Ansible Deployment'
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-
-      - name: Terraform Init
-        run: terraform init
-        working-directory: ./infra
-      
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: ./infra
-        env:
-          TF_VAR_username: ${{ secrets.TF_VAR_USERNAME }}
-          TF_VAR_password: ${{ secrets.TF_VAR_PASSWORD }}
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-    
       - name: Get app VM IP and create Ansible hosts.ini
         id: get-ip
         run: |
@@ -46,7 +18,6 @@ jobs:
           VM_NAME_SONAR="Sonar-vm"
 
           IP=$(az vm list-ip-addresses --name "$VM_NAME" --resource-group "$RESOURCE_GROUP" --query "[0].virtualMachine.network.publicIpAddresses[0].ipAddress" -o tsv)
-          IP_SONAR=$(az vm list-ip-addresses --name "$VM_NAME_SONAR" --resource-group "$RESOURCE_GROUP" --query "[0].virtualMachine.network.publicIpAddresses[0].ipAddress" -o tsv)
           echo "App VM IP: $IP"
           echo "ip=$IP" >> $GITHUB_OUTPUT
 
@@ -57,7 +28,6 @@ jobs:
           cat <<EOF > hosts.ini
           [my-vms]
           app ansible_host=$IP ansible_user=${{ secrets.TF_VAR_USERNAME }} ansible_password=${{ secrets.TF_VAR_PASSWORD }}
-          sonar ansible_host=$IP_SONAR ansible_user=${{ secrets.TF_VAR_USERNAME }} ansible_password=${{ secrets.TF_VAR_PASSWORD }}
 
 
       - name: Run Ansible Playbook from ansible folder
@@ -66,11 +36,3 @@ jobs:
           cat hosts.ini
           ansible-playbook -i hosts.ini playbook.yml
       
-      # Build the Docker image
-      - name: Build Docker image
-        run: |
-         docker build -t selenium-test ./selenium-test
-
-      - name: Run Selenium Tests in Docker
-        run: |
-          docker run --rm -e APP_IP=${{ steps.get-ip.outputs.ip }} selenium-test
