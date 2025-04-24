@@ -65,6 +65,12 @@
         mode: '0755'
       register: result
 
+    - name: rebuild todos-api
+      command: docker build -t todos-api ./todos-api
+      args:
+        chdir: /home/{{ ansible_user }}
+      when: result.changed
+
     - name: Copy auth-api directory to the target machine
       copy:
         src: ../auth-api
@@ -72,6 +78,12 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
+    
+    - name: rebuild todos-api
+      command: docker build -t todos-api ./todos-api
+      args:
+        chdir: /home/{{ ansible_user }}
+      when: result.changed
 
     - name: Copy users-api directory to the target machine
       copy:
@@ -81,6 +93,12 @@
         group: "{{ ansible_user }}"
         mode: '0755'
 
+    - name: rebuild todos-api
+      command: docker build -t todos-api ./todos-api
+      args:
+        chdir: /home/{{ ansible_user }}
+      when: result.changed
+
     - name: Copy frontend directory to the target machine
       copy:
         src: ../frontend
@@ -89,6 +107,12 @@
         group: "{{ ansible_user }}"
         mode: '0755'
 
+    - name: rebuild frontend
+      command: docker build -t frontend ./frontend
+      args:
+        chdir: /home/{{ ansible_user }}
+      when: result.changed
+
     - name: Copy log-message-processor directory to the target machine
       copy:
         src: ../log-message-processor
@@ -96,6 +120,12 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
+    
+    - name: rebuild log-message-processor
+      command: docker build -t log-message-processor ./log-message-processor
+      args:
+        chdir: /home/{{ ansible_user }}
+      when: result.changed
 
 
     - name: Run Docker Compose
