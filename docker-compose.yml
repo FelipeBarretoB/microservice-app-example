@@ -63,6 +63,8 @@ services:
      context: ./frontend
      dockerfile: Dockerfile
    container_name: frontend
+   volumes:
+    - /home/{{ ansible_user }}/frontend:/app
    depends_on:
      - auth_api
      - todos_api
