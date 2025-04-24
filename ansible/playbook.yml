@@ -78,6 +78,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
+      register: result
     
     - name: rebuild todos-api
       command: docker build -t todos-api ./todos-api
@@ -92,6 +93,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
+      register: result
 
     - name: rebuild todos-api
       command: docker build -t todos-api ./todos-api
@@ -106,6 +108,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
+      register: result
 
     - name: rebuild frontend
       command: docker build -t frontend ./frontend
@@ -120,6 +123,7 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0755'
+      register: result
     
     - name: rebuild log-message-processor
       command: docker build -t log-message-processor ./log-message-processor
