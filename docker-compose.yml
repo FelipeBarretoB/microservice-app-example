@@ -72,3 +72,11 @@ services:
      TODOS_API_ADDRESS: http://todos-api:8082
    ports:
      - "8080:8080"
+
+  zipkin:
+    image: openzipkin/zipkin:2.24
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    environment:
+      - STORAGE_TYPE=mem
